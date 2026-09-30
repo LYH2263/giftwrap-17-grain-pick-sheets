@@ -14,18 +14,26 @@ def insert_run(box_id, overlap, result, note=""):
     finally:
         c.close()
 
+def _row_to_run(row):
+    """列表与详情共用同一快照解析口径，保证两路回放一致。"""
+    d = dict(row)
+    d["result"] = json.loads(d.pop("result_json"))
+    return d
+
+_RUN_SELECT = """SELECT r.*, b.name box_name FROM calc_runs r LEFT JOIN boxes b ON b.id=r.box_id"""
+
+def get_run(run_id):
+    c = connect()
+    try:
+        row = c.execute(_RUN_SELECT + " WHERE r.id=?", (run_id,)).fetchone()
+        return _row_to_run(row) if row else None
+    finally:
+        c.close()
+
 def list_runs(limit=50):
     c = connect()
     try:
-        rows = c.execute(
-            """SELECT r.*, b.name box_name FROM calc_runs r LEFT JOIN boxes b ON b.id=r.box_id ORDER BY r.id DESC LIMIT ?""",
-            (limit,),
-        ).fetchall()
-        out = []
-        for row in rows:
-            d = dict(row)
-            d["result"] = json.loads(d.pop("result_json"))
-            out.append(d)
-        return out
+        rows = c.execute(_RUN_SELECT + " ORDER BY r.id DESC LIMIT ?", (limit,)).fetchall()
+        return [_row_to_run(r) for r in rows]
     finally:
         c.close()

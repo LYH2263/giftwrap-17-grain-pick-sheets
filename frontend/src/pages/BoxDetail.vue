@@ -30,7 +30,7 @@ onMounted(async () => {
       <p v-if="box.data_quality === 'dirty'" class="bad">{{ box.note }}</p>
       <BoxUnfold :l="box.length" :w="box.width" :h="box.height" />
       <div class="row" style="margin-top: 1.25rem">
-        <router-link class="btn" to="/bench">用此盒去算纸</router-link>
+        <router-link class="btn" :to="`/bench?box=${box.id}`">用此盒去算纸</router-link>
         <router-link class="btn ghost" to="/boxes">返回清单</router-link>
       </div>
     </template>

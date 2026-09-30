@@ -4,6 +4,7 @@ defineProps({
   w: { type: Number, default: 0 },
   h: { type: Number, default: 0 },
   paperM2: { type: Number, default: null },
+  grain: { type: String, default: '' },
 })
 </script>
 
@@ -22,10 +23,16 @@ defineProps({
       <text x="226" y="98" text-anchor="middle">侧</text>
       <text x="140" y="152" text-anchor="middle">h≈{{ Number(h).toFixed(2) }}</text>
     </svg>
+    <p v-if="grain === 'length'" class="stat-line">
+      卷向：<strong>长向</strong> —— 卷宽对齐长向展开主尺 2L+2H = {{ Number(2 * l + 2 * h).toFixed(3) }} m
+    </p>
+    <p v-else-if="grain === 'width'" class="stat-line">
+      卷向：<strong>宽向</strong> —— 卷宽对齐宽向展开主尺 2W+2H = {{ Number(2 * w + 2 * h).toFixed(3) }} m
+    </p>
     <p v-if="paperM2 != null" class="stat-line">
       估算用纸 <strong>{{ Number(paperM2).toFixed(4) }}</strong> m²（含折边系数）
     </p>
-    <p v-else class="stat-line">
+    <p v-else-if="!grain" class="stat-line">
       外形 {{ Number(l).toFixed(2) }} × {{ Number(w).toFixed(2) }} × {{ Number(h).toFixed(2) }} m
     </p>
   </div>
